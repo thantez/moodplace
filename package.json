@@ -1,0 +1,12 @@
+{
+  "name": "moodplace",
+  "version": "0.0.1",
+  "description": "A Telegram bot to recognize mood for place recommendation.",
+  "main": "index.js",
+  "repository": "git@github.com:thantez/moodplace.git",
+  "author": "Mohammad Mahdi Bakhshi <bakhshi@protonmail.com>",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "telegraf": "^4.3.0"
+  }
+}
