@@ -6,7 +6,7 @@ const {
   Scenes,
   session,
 } = require('telegraf')
-const { route_calculator } = require('./route')
+const { route_calculator, download_file } = require('./route')
 
 const BOT_TOKEN = process.env.BOT_TOKEN
 const MAP_TOKEN = process.env.MAP_TOKEN
@@ -158,6 +158,14 @@ bot.hears('تشخیص احساسات با پرسشنامه', async (ctx) => {
   await ctx.reply(`حس ${questions[0][0]}. ${questions[0][1]}`, OPTIONS_KEYBOARD.resize())
 })
 
+bot.hears('تشخیص احساسات با صوت', async (ctx) => {
+  ctx.session = {
+    state: 'audio',
+  }
+  await ctx.reply('لطفا یک صوت از خود ضبط کنید و برای ربات ارسال کنید. در این صوت کمی راجع به خودتان صحبت کنید.')
+  await ctx.reply('توجه کنید که صوت شما برای پردازش‌های مرتبط با تشخیص احساسات و تقویت الگوریتم‌ها در مراکز داده ما ذخیره خواهد شد.')
+})
+
 bot.action('extremely', answered_point(5))
 bot.action('quite a bit', answered_point(4))
 bot.action('moderately', answered_point(3))
@@ -231,8 +239,20 @@ bot.on('location', async (ctx) => {
   }
 })
 
+bot.on('voice', async (ctx) => {
+  const chat_id = ctx.message.chat.id
+  const file_id = ctx.message.voice.file_id
+  const file = await ctx.telegram.getFileLink(file_id)
+  const file_path = (await ctx.telegram.getFile(file_id)).file_path.replace('/', '_')
+  const href = file.href
+  await download_file(href, `files/${chat_id}_${file_id}_${file_path}`)
+  await ctx.reply('صوت شما دریافت شد.')
+  await ctx.reply('در حال حاضر امکان تشخیص احساسات شما بر اساس صوت وجود ندارد. صدای شما برای آماده‌سازی الگوریتم تشخیص احساسات استفاده خواهد شد. پس از آماده‌سازی این بخش به شما اطلاع خواهیم داد.')
+  return await ctx.reply('می‌توانید از /start دیگر بخش‌های ربات را مشاهده کنید.')
+})
+
 bot.on('message', async (ctx) => {
-  console.log(ctx)
+  return await ctx.reply('پیامی که ارسال کرده‌اید توسط ربات پشتیبانی نمی‌شود. لطفا /start کنید.')
 })
 
 bot.catch((err, ctx) => {

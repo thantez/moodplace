@@ -31,4 +31,5 @@ const route = async (source_lon, source_lat, dest_lon, dest_lat, mode, ctx) => {
 
 module.exports = {
   route_calculator: route,
+  download_file,
 }
